@@ -41,34 +41,63 @@ Datastructures::~Datastructures()
 unsigned int Datastructures::town_count()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("town_count()");
+    //throw NotImplemented("town_count()");
+
+    return towns_.size();
 }
 
 void Datastructures::clear_all()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("clear_all()");
+    // throw NotImplemented("clear_all()");
+
+    // deleting all  towns
+    for( std::map<TownID, Town>::iterator
+         iter = towns_.begin();
+         iter != towns_.end();
+         ++iter )
+    {
+        towns_.erase(iter);
+    }
 }
 
-bool Datastructures::add_town(TownID /*id*/, const Name &/*name*/, Coord /*coord*/, int /*tax*/)
+bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("add_town()");
+    // throw NotImplemented("add_town()");
+    if (towns_.find(id) != towns_.end()){
+        return false;
+    }
+
+    Town new_town;
+    new_town.name_ = name;
+    new_town.coordinates_ = coord;
+    new_town.taxes_ = tax;
+
+    towns_.insert({id, new_town});
+
+    return true;
+
+
 }
 
-Name Datastructures::get_town_name(TownID /*id*/)
+Name Datastructures::get_town_name(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_name()");
+    // throw NotImplemented("get_town_name()");
+
+    return towns_.at(id).name_;
 }
 
-Coord Datastructures::get_town_coordinates(TownID /*id*/)
+Coord Datastructures::get_town_coordinates(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_coordinates()");
+    // throw NotImplemented("get_town_coordinates()");
+
+    return towns_.at(id).coordinates_;
 }
 
 int Datastructures::get_town_tax(TownID /*id*/)

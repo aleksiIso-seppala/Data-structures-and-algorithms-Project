@@ -14,6 +14,7 @@
 #include <limits>
 #include <functional>
 #include <exception>
+#include <map>
 
 // Types for IDs
 using TownID = std::string;
@@ -179,6 +180,17 @@ public:
 
 private:
     // Add stuff needed for your class implementation here
+
+    struct Town{
+      Name name_;
+      Coord coordinates_;
+      int taxes_;
+      Town* host_;
+      std::vector<Town*> vassals_;
+
+    };
+
+    std::map<TownID, Town> towns_;
 
 };
 
