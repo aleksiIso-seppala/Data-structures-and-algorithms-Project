@@ -10,6 +10,8 @@
 
 #include <cmath>
 
+#include <iostream>
+
 std::minstd_rand rand_engine; // Reasonably quick pseudo-random generator
 
 template <typename Type>
@@ -74,8 +76,10 @@ bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
     new_town.name_ = name;
     new_town.coordinates_ = coord;
     new_town.taxes_ = tax;
+    new_town.dist_ = sqrt(coord.x*coord.x + coord.y*coord.y);
 
     towns_.insert({id, new_town});
+
 
     return true;
 
@@ -155,19 +159,41 @@ bool Datastructures::change_town_name(TownID id, const Name &newname)
 std::vector<TownID> Datastructures::towns_alphabetically()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("towns_alphabetically()");
+    // throw NotImplemented("towns_alphabetically()");
+
+    std::vector<TownID> towns_alphabet;
+    towns_alphabet = all_towns();
+
+    std::sort(towns_alphabet.begin(), towns_alphabet.end(),
+              [this](auto l,auto r)
+    {return towns_.at(l).name_ < towns_.at(r).name_;});
+    return towns_alphabet;
+
 }
 
 std::vector<TownID> Datastructures::towns_distance_increasing()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("towns_distance_increasing()");
+    // throw NotImplemented("towns_distance_increasing()");
+
+    std::vector<TownID> towns_distance;
+    towns_distance = all_towns();
+
+    std::sort(towns_distance.begin(), towns_distance.end(),
+              [this](auto l,auto r)
+    {return towns_.at(l).dist_ < towns_.at(r).dist_;});
+    return towns_distance;
+
 }
 
 TownID Datastructures::min_distance()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("min_distance()");
+    // throw NotImplemented("min_distance()");
+
+//    auto result = std::min_element(towns_.begin(),towns_.end());
+//    return;
+
 }
 
 TownID Datastructures::max_distance()

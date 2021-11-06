@@ -187,6 +187,7 @@ private:
       int taxes_;
       Town* host_;
       std::vector<Town*> vassals_;
+      Distance dist_;
 
     };
 
