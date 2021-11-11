@@ -181,17 +181,20 @@ public:
 private:
     // Add stuff needed for your class implementation here
 
+    int calculate_distance(int x1,int y1, int x2, int y2);
+
     struct Town{
       Name name_;
       Coord coordinates_;
       int taxes_;
-      Town* host_;
-      std::vector<Town*> vassals_;
-      Distance dist_;
+      TownID master_ = NO_TOWNID;
+      std::vector<TownID> vassals_;
+      Distance dist_to_center_;
 
     };
 
     std::map<TownID, Town> towns_;
+
 
 };
 
