@@ -15,6 +15,7 @@
 #include <functional>
 #include <exception>
 #include <map>
+#include <set>
 
 // Types for IDs
 using TownID = std::string;
@@ -96,47 +97,58 @@ public:
     Datastructures();
     ~Datastructures();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: It may be even O(1), but I couldn't find
+    // performances for function used in here (size()).
+    // But i'm sure it can't be slower than O(n).
     unsigned int town_count();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: map::clear algorithm used in the function
+    // is O(n)
     void clear_all();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Function calls a helper function which is O(n) and
+    // after that creates the struct and inserts it to the map and that is O(n) Θ(1).
     bool add_town(TownID id, Name const& name, Coord coord, int tax);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Helper function does_town_exist is O(n) and after that
+    // insertion to unordered_map is O(n) and Θ(1)
     Name get_town_name(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Helper function does_town_exist is O(n) and after that
+    // getting the coordinates is O(n) and Θ(1).
     Coord get_town_coordinates(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Helper function does_town_exist is O(n) and after that
+    // getting the tax is O(n) and Θ(1).
     int get_town_tax(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: function goes trough all towns in the unordered_map (O(n)) and
+    // adds them to the back of the vector (O(1)).
     std::vector<TownID> all_towns();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: function goes through all towns in the unordered_map (O(n)) and
+    // adds the ones with the correct name to the back of the vector (O(1)).
     std::vector<TownID> find_towns(Name const& name);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Helper function does_town_exist is O(n) and the setting of the
+    // new name after that is O(n) and Θ(1) (the accessing of the correct town and changing the name).
     bool change_town_name(TownID id, Name const& newname);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n*logn)
+    // Short rationale for estimate: First uses the all_towns function (O(n)) and after that
+    // uses std::sort to sort the names alphabetically (O(n*logn)).
     std::vector<TownID> towns_alphabetically();
 
-    // Estimate of performance:
+    // Estimate of performance: O(n*logn)
     // Short rationale for estimate:
     std::vector<TownID> towns_distance_increasing();
 
@@ -181,19 +193,21 @@ public:
 private:
     // Add stuff needed for your class implementation here
 
-    int calculate_distance(int x1,int y1, int x2, int y2);
+    int calculate_distance(Coord coord1, Coord coord2);
+    bool does_town_exist(TownID id);
 
     struct Town{
       Name name_;
-      Coord coordinates_;
+      Coord coord_;
       int taxes_;
       TownID master_ = NO_TOWNID;
-      std::vector<TownID> vassals_;
+      std::set<TownID> vassals_;
       Distance dist_to_center_;
 
     };
 
-    std::map<TownID, Town> towns_;
+    std::unordered_map<TownID, Town> towns_;
+
 
 
 };
