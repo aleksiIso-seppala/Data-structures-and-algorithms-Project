@@ -113,17 +113,17 @@ public:
     // after that creates the struct and inserts it to the map and that is O(n) Θ(1).
     bool add_town(TownID id, Name const& name, Coord coord, int tax);
 
-    // Estimate of performance: O(n)
+    // Estimate of performance: O(n) and Θ(1)
     // Short rationale for estimate: Helper function does_town_exist is O(n) and after that
     // insertion to unordered_map is O(n) and Θ(1)
     Name get_town_name(TownID id);
 
-    // Estimate of performance: O(n)
+    // Estimate of performance: O(n) and Θ(1)
     // Short rationale for estimate: Helper function does_town_exist is O(n) and after that
     // getting the coordinates is O(n) and Θ(1).
     Coord get_town_coordinates(TownID id);
 
-    // Estimate of performance: O(n)
+    // Estimate of performance: O(n) and Θ(1)
     // Short rationale for estimate: Helper function does_town_exist is O(n) and after that
     // getting the tax is O(n) and Θ(1).
     int get_town_tax(TownID id);
@@ -148,46 +148,60 @@ public:
     // uses std::sort to sort the names alphabetically (O(n*logn)).
     std::vector<TownID> towns_alphabetically();
 
-    // Estimate of performance: O(n*logn)
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Goes through a multimap O(n) and adds the TownID to vector (O(1))
     std::vector<TownID> towns_distance_increasing();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Takes the first element of the multimap O(n).
     TownID min_distance();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Takes the last element of the multimap O(n);
     TownID max_distance();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(logn)
+    // Short rationale for estimate: adds the vassal to set
     bool add_vassalship(TownID vassalid, TownID masterid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n), where the n is the number of vassals the town has
+    // Short rationale for estimate: function goes through the set of vassals O(n) and
+    // adds them to the back of the vector.
     std::vector<TownID> get_town_vassals(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n), where n is the size of the vector that the function
+    // returns.
+    // Short rationale for estimate: goes through towns, adds their master (O(n) Θ(1))
+    // to the vector (O(1)) until the master is NO_TOWNID.
     std::vector<TownID> taxer_path(TownID id);
 
     // Non-compulsory phase 1 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: at worst needs to remove the town from the map (O(n) Θ(1)),
+    // and add the towns vassals to a new master (O(n)). also needs to remove the town from their
+    // masters vassal set (O(n)).
     bool remove_town(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(nlogn)
+    // Short rationale for estimate: First gets all towns from all_towns function (O(n)),
+    // then uses std::sort(O(nlogn) to calculate the distance from a set coordinate using
+    // lambda function calculate_distance(O(1)) for comparisons.
     std::vector<TownID> towns_nearest(Coord coord);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(nlogn)
+    // Short rationale for estimate: Uses a recursive function to go through the vassals and find the
+    // longest path. N is the total amount of vassals that are under the town (this counts also their
+    // vassals, and their vassals and so forth). All single operations are O(1) with a few exceptions.
+    // Getting information from the map is O(n), Θ(1). And inserting the new town to the front of the
+    // vector is O(n).
     std::vector<TownID> longest_vassal_path(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(nlogn)
+    // Short rationale for estimate: Uses a recursive function to go through all the vassals and get
+    // their taxes. N is the total amount of vassals that are under the town (this counts alsot their
+    // vassals, and their vassals and so forth. All of the operations where information is fetched
+    // from the map are O(n), Θ(1).
     int total_net_tax(TownID id);
 
 private:
@@ -202,12 +216,12 @@ private:
       int taxes_;
       TownID master_ = NO_TOWNID;
       std::set<TownID> vassals_;
-      Distance dist_to_center_;
+      Distance dist_to_origo_;
 
     };
 
     std::unordered_map<TownID, Town> towns_;
-
+    std::multimap<Distance,TownID> distances_from_origo_;
 
 
 };

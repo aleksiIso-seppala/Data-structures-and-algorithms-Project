@@ -1,0 +1,16 @@
+add_town A A (0,0) 25
+add_town B B (5,5) 10
+add_town C C (10,0) 50
+add_town D D (0,15) 66
+add_town E E (20,10) 20
+add_town F F (25,5) 15
+add_town G G (25,2) 10
+add_town H H (5,13) 999
+add_vassalship G F
+add_vassalship H F
+add_vassalship E B
+add_vassalship F B
+add_vassalship B A
+add_vassalship C A
+add_vassalship D A
+total_net_tax A
