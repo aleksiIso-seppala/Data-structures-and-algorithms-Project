@@ -14,6 +14,8 @@
 #include <limits>
 #include <functional>
 #include <exception>
+#include <map>
+#include <set>
 
 // Types for IDs
 using TownID = std::string;
@@ -224,7 +226,21 @@ public:
 
 private:
     // Add stuff needed for your class implementation here
+    int calculate_distance(Coord coord1, Coord coord2);
+    bool does_town_exist(TownID id);
 
+    struct Town{
+      Name name_;
+      Coord coord_;
+      int taxes_;
+      TownID master_ = NO_TOWNID;
+      std::set<TownID> vassals_;
+      Distance dist_to_origo_;
+
+    };
+
+    std::unordered_map<TownID, Town> towns_;
+    std::multimap<Distance,TownID> distances_from_origo_;
 };
 
 #endif // DATASTRUCTURES_HH
