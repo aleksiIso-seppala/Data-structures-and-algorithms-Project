@@ -252,23 +252,13 @@ private:
       std::vector<Town*> adjacent_towns_;
       std::vector<Road*> roads_;
       Color color_ = "white";
-      int distance_ = 0;
       Town* pi_ = nullptr;
-
-    };
-
-    struct Road{
-        int length_;
-        Town* town1;
-        Town* town2;
-
 
     };
 
     std::unordered_map<TownID, Town> towns_;
     std::multimap<Distance,TownID> distances_from_origo_;
     std::vector<std::pair<TownID,TownID>> all_roads_;
-    std::vector<Road*> roads_;
 
 };
 
