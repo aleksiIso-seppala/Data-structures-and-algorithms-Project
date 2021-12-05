@@ -1,8 +1,8 @@
 // Datastructures.hh
 //
-// Student name:
-// Student email:
-// Student number:
+// Student name: Aleksi Iso-Seppälä
+// Student email: aleksi.iso-seppala@tuni.fi
+// Student number: H292168
 
 #ifndef DATASTRUCTURES_HH
 #define DATASTRUCTURES_HH
@@ -16,10 +16,12 @@
 #include <exception>
 #include <map>
 #include <set>
+#include <deque>
 
 // Types for IDs
 using TownID = std::string;
 using Name = std::string;
+using Color = std::string;
 
 // Return values for cases where required thing was not found
 TownID const NO_TOWNID = "----------";
@@ -225,11 +227,20 @@ public:
     Distance trim_road_network();
 
 private:
+
+    struct Town;
+    struct Road;
+
     // Add stuff needed for your class implementation here
     int calculate_distance(Coord coord1, Coord coord2);
     bool does_town_exist(TownID id);
+    std::vector<TownID> breadth_first_search(Town* fromtown, Town* totown);
+    std::vector<TownID> depth_first_search(Town* fromtown);
+
 
     struct Town{
+      // data needed for towns
+      TownID ID_;
       Name name_;
       Coord coord_;
       int taxes_;
@@ -237,10 +248,28 @@ private:
       std::set<TownID> vassals_;
       Distance dist_to_origo_;
 
+      // data needed for roads
+      std::vector<Town*> adjacent_towns_;
+      std::vector<Road*> roads_;
+      Color color_ = "white";
+      int distance_ = 0;
+      Town* pi_ = nullptr;
+
+    };
+
+    struct Road{
+        int length_;
+        Town* town1;
+        Town* town2;
+
+
     };
 
     std::unordered_map<TownID, Town> towns_;
     std::multimap<Distance,TownID> distances_from_origo_;
+    std::vector<std::pair<TownID,TownID>> all_roads_;
+    std::vector<Road*> roads_;
+
 };
 
 #endif // DATASTRUCTURES_HH

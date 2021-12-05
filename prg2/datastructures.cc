@@ -1,14 +1,16 @@
 // Datastructures.cc
 //
-// Student name:
-// Student email:
-// Student number:
+// Student name: Aleksi Iso-Seppälä
+// Student email: aleksi.iso-seppala@tuni.fi
+// Student number: H292168
 
 #include "datastructures.hh"
 
 #include <random>
 
 #include <cmath>
+
+#include <iostream>
 
 std::minstd_rand rand_engine; // Reasonably quick pseudo-random generator
 
@@ -85,9 +87,9 @@ bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
     new_town.name_ = name;
     new_town.coord_ = coord;
     new_town.taxes_ = tax;
+    new_town.ID_ = id;
     new_town.dist_to_origo_ = sqrt((coord.x)*(coord.x)+(coord.y)*(coord.y));
     Distance dist = sqrt((coord.x)*(coord.x)+(coord.y)*(coord.y));
-
     // add town to unordered_map
     towns_.insert({id, new_town});
 
@@ -417,34 +419,131 @@ int Datastructures::total_net_tax(TownID id)
 void Datastructures::clear_roads()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("clear_roads()");
+
+    all_roads_.clear();
+    for(auto &town : towns_){
+        town.second.adjacent_towns_.clear();
+        town.second.roads_.clear();
+    }
+    return;
 }
 
 std::vector<std::pair<TownID, TownID>> Datastructures::all_roads()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("all_roads()");
+    return all_roads_;
 }
 
-bool Datastructures::add_road(TownID /*town1*/, TownID /*town2*/)
+bool Datastructures::add_road(TownID town1, TownID town2)
+{
+
+    TownID id_small;
+    TownID id_large;
+
+    if(!does_town_exist(town2) ||
+       !does_town_exist(town1)){
+        return false;
+    }
+
+    if(town1 < town2){
+        id_small = town1;
+        id_large = town2;
+    }
+    else{
+        id_small = town2;
+        id_large = town1;
+    }
+
+    auto smaller_town = &towns_.find(id_small)->second;
+    Town* larger_town = &towns_.find(id_large)->second;
+
+    smaller_town->adjacent_towns_.push_back(larger_town);
+    larger_town->adjacent_towns_.push_back(smaller_town);
+
+    Road new_road;
+    new_road.length_ = calculate_distance(smaller_town->coord_,
+                                          larger_town->coord_);
+    new_road.town1 = smaller_town;
+    new_road.town2 = larger_town;
+
+    all_roads_.push_back({id_small,id_large});
+
+    return true;
+}
+
+std::vector<TownID> Datastructures::get_roads_from(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("add_road()");
+
+    std::vector<TownID> roads_from;
+    auto town = towns_.find(id);
+    if(town == towns_.end()){
+        roads_from.push_back(NO_TOWNID);
+        return roads_from;
+    }
+    for(auto town : town->second.adjacent_towns_){
+        roads_from.push_back(town->ID_);
+    }
+    return roads_from;
 }
 
-std::vector<TownID> Datastructures::get_roads_from(TownID /*id*/)
+std::vector<TownID> Datastructures::breadth_first_search(Town* fromtown, Town* totown){
+
+    std::deque<Town*> Q;
+    std::vector<TownID> short_route;
+    fromtown->color_ = "gray";
+    fromtown->distance_ = 0;
+    Q.push_back(fromtown);
+
+    while(Q.size() != 0){
+        auto u = Q.at(0);
+        Q.pop_front();
+        for(auto v : u->adjacent_towns_){
+
+            if(v->color_ == "white"){
+                v->color_ = "gray";
+                v->distance_ = u->distance_ + 1;
+                v->pi_ = u;
+                Q.push_back(v);
+            }
+        }
+        u->color_ = "black";
+    }
+
+    Town* current_town = totown;
+    while(current_town != fromtown){
+
+        short_route.insert(short_route.begin(),current_town->ID_);
+        Town* tmp = current_town->pi_;
+
+        current_town = tmp;
+    }
+
+    if(short_route.size() == 0){
+        short_route.push_back(NO_TOWNID);
+    }
+    else{
+        short_route.insert(short_route.begin(),current_town->ID_);
+    }
+    return short_route;
+}
+
+std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_roads_from()");
-}
 
-std::vector<TownID> Datastructures::any_route(TownID /*fromid*/, TownID /*toid*/)
-{
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("any_route()");
+    auto fromtown = &towns_.find(fromid)->second;
+    auto totown = &towns_.find(toid)->second;
+
+
+    for (auto &town : towns_){
+        town.second.color_ = "white";
+        town.second.pi_ = nullptr;
+    }
+    auto any_route = breadth_first_search(fromtown, totown);
+    return any_route;
 }
 
 bool Datastructures::remove_road(TownID /*town1*/, TownID /*town2*/)
@@ -454,11 +553,58 @@ bool Datastructures::remove_road(TownID /*town1*/, TownID /*town2*/)
     throw NotImplemented("remove_road()");
 }
 
-std::vector<TownID> Datastructures::least_towns_route(TownID /*fromid*/, TownID /*toid*/)
+std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("least_towns_route()");
+    auto fromtown = &towns_.find(fromid)->second;
+    auto totown = &towns_.find(toid)->second;
+
+
+    for (auto &town : towns_){
+        town.second.color_ = "white";
+        town.second.pi_ = nullptr;
+    }
+    auto any_route = breadth_first_search(fromtown, totown);
+    return any_route;
+}
+
+std::vector<TownID> Datastructures::depth_first_search(Town* fromtown){
+
+    std::vector<Town*> S;
+    std::vector<TownID> short_route;
+    bool cycle_found = false;
+    fromtown->distance_ = 0;
+    S.push_back(fromtown);
+
+    while(S.size() != 0){
+        auto u = S.at(S.size()-1);
+        S.pop_back();
+        if(u->color_ == "white"){
+            u->color_ = "gray";
+            S.push_back(u);
+            for(auto v : u->adjacent_towns_){
+                if(v->color_ == "white"){
+                    S.push_back(v);
+                    v->pi_ = u;
+                }
+                else{
+                    cycle_found = true;
+                }
+            }
+        }
+        else{
+            u->color_ = "black";
+        }
+    }
+
+    if(cycle_found){
+
+    }
+    else{
+
+    }
+
 }
 
 std::vector<TownID> Datastructures::road_cycle_route(TownID /*startid*/)

@@ -9,7 +9,7 @@ add_town x1 xx (3,3) 6
 add_town x2 xy (4,4) 8
 # Adding roads
 add_road Tpe x1
-# add_road x1 x2
+add_road x1 x2
 add_road x2 Ol
 add_road Ol Kuo
 add_road Tpe Kuo
