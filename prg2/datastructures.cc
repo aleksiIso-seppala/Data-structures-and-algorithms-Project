@@ -751,7 +751,7 @@ std::vector<TownID> Datastructures::dijkstra(Town* fromtown, Town* totown){
                 Q.push({v->dist_*(-1),v});
             }
             else{
-                if(u->pi_ != v){
+                if(v->color_ != "black"){
                     Q.push({v->dist_*(-1),v});
                 }
 
