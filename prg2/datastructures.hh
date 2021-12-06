@@ -17,6 +17,8 @@
 #include <map>
 #include <set>
 #include <deque>
+#include <queue>
+#include <algorithm>
 
 // Types for IDs
 using TownID = std::string;
@@ -229,13 +231,14 @@ public:
 private:
 
     struct Town;
-    struct Road;
 
     // Add stuff needed for your class implementation here
     int calculate_distance(Coord coord1, Coord coord2);
     bool does_town_exist(TownID id);
     std::vector<TownID> breadth_first_search(Town* fromtown, Town* totown);
     std::vector<TownID> depth_first_search(Town* fromtown);
+    std::vector<TownID> dijkstra(Town* fromtown, Town* totown);
+    void Relax(Town* u, Town* v);
 
 
     struct Town{
@@ -250,9 +253,9 @@ private:
 
       // data needed for roads
       std::vector<Town*> adjacent_towns_;
-      std::vector<Road*> roads_;
       Color color_ = "white";
       Town* pi_ = nullptr;
+      Distance dist_;
 
     };
 
