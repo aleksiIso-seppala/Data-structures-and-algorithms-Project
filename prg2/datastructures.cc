@@ -10,8 +10,6 @@
 
 #include <cmath>
 
-#include <iostream>
-
 std::minstd_rand rand_engine; // Reasonably quick pseudo-random generator
 
 template <typename Type>
@@ -449,6 +447,9 @@ bool Datastructures::add_road(TownID town1, TownID town2)
         return false;
     }
 
+    if(town1 == town2){
+        return false;
+    }
     //assigning the variables so the smaller goes to id_small and vice versa
     if(town1 < town2){
         id_small = town1;
@@ -737,7 +738,6 @@ std::vector<TownID> Datastructures::dijkstra(Town* fromtown, Town* totown){
     while(Q.size() != 0){
         Town* u = Q.top().second;
         Q.pop();
-        std::cout << u->ID_ << std::endl;
 
         for(auto v : u->adjacent_towns_){
             Relax(u,v);
@@ -768,7 +768,6 @@ std::vector<TownID> Datastructures::dijkstra(Town* fromtown, Town* totown){
     // goes through the route in reverse order and adds the towns to a vector
     Town* current_town = totown;
     while(current_town != fromtown){
-        std::cout << current_town->ID_ << std::endl;
         route.insert(route.begin(),current_town->ID_);
         Town* tmp = current_town->pi_;
 

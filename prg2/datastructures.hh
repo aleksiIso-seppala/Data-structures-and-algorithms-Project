@@ -186,42 +186,58 @@ public:
 
     // Phase 2 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: function needs to go through all the towns to delete their connection
+    // to other towns via roads.
     void clear_roads();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(1)
+    // Short rationale for estimate: returns the vector that has all the roads stored in it with the
+    // add_road function.
     std::vector<std::pair<TownID, TownID>> all_roads();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: this function would be faster, but in order to find if the road already exists
+    // we need to go through all the roads in the network. This is done with std::find for the vector (O(n)), in which
+    // n is the amount of roads.
     bool add_road(TownID town1, TownID town2);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: This function is O(n) where n is the amount of towns connected to the town searched.
+    // So unless the town is connected to every other town in the network, this isn't as slow as O(n) would suggest.
     std::vector<TownID> get_roads_from(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: The function calls breadth_first_search function (complexity) to map out the route,
+    // but before that it needs to go through all the towns in order (O(n)) to set their parameters so the algorithm works
+    // correctly.
     std::vector<TownID> any_route(TownID fromid, TownID toid);
 
     // Non-compulsory phase 2 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: the function needs to go through multiple vectors in order to completely delete
+    // the road. First it needs to remove the connection from both towns (O(n) where n is the amount of towns
+    // connected to the searched town). After that it needs to go through the
+    // vector with all the roads in it (O(n), where n is the amount of roads) in order to
+    // find the correct road to delete.
     bool remove_road(TownID town1, TownID town2);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: This function is exactly the same as any_route, so the complexity is O(n). This is
+    // because in order for the algorithm to work correctly, we need to go through all the towns to reset certain
+    // parameters.
     std::vector<TownID> least_towns_route(TownID fromid, TownID toid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Uses a modified breadth-first-search to find the loops in the network
+    // but first it needs to reset the parameters in all towns, so it needs to go through all the towns before
+    // the algorithm.
     std::vector<TownID> road_cycle_route(TownID startid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(n)
+    // Short rationale for estimate: Uses the djikstra algorithm (complexity) to find the shortest route, but before that
+    // it needs to reset the parameters in all towns.
     std::vector<TownID> shortest_route(TownID fromid, TownID toid);
 
     // Estimate of performance:
