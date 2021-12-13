@@ -740,6 +740,7 @@ std::vector<TownID> Datastructures::dijkstra(Town* fromtown, Town* totown){
         Q.pop();
 
         for(auto v : u->adjacent_towns_){
+            Distance v_old = v->dist_;
             Relax(u,v);
             if(v == totown){
                 route_found = true;
@@ -751,7 +752,7 @@ std::vector<TownID> Datastructures::dijkstra(Town* fromtown, Town* totown){
                 Q.push({v->dist_*(-1),v});
             }
             else{
-                if(v->color_ != "black"){
+                if(v_old > v->dist_ && v->color_ != "black"){
                     Q.push({v->dist_*(-1),v});
                 }
 
