@@ -653,7 +653,7 @@ std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid
 
 // uses a modified version of breadth_first_search algorithm, after the algorithm
 // goes through the towns from the loop point back to the starting town.
-std::vector<TownID> Datastructures::depth_first_search(Town* fromtown){
+std::vector<TownID> Datastructures::search_loop(Town* fromtown){
 
     std::vector<Town*> Q;
     std::vector<TownID> route;
@@ -662,6 +662,8 @@ std::vector<TownID> Datastructures::depth_first_search(Town* fromtown){
     Town* previous_town = fromtown;
     Town* last_town = nullptr;
 
+
+    //breadth_first_search modified to stop if loop is found
     while(Q.size() != 0){
         auto u = Q.at(Q.size()-1);
         previous_town = u;
@@ -676,6 +678,7 @@ std::vector<TownID> Datastructures::depth_first_search(Town* fromtown){
                 if(previous_town == v->pi_){
                     continue;
                 }
+                // loop is found
                 if(v->color_ == "gray"){
                     cycle_found = true;
                     last_town = v;
@@ -686,6 +689,7 @@ std::vector<TownID> Datastructures::depth_first_search(Town* fromtown){
                             break;
                         }
                     }
+                    // clear the vector so we can exit the while loop.
                     Q.clear();
                     break;
                 }
@@ -694,6 +698,7 @@ std::vector<TownID> Datastructures::depth_first_search(Town* fromtown){
         u->color_ = "black";
     }
 
+    //if cycle was found, insert the towns in reverse order to the return vector.
     if(cycle_found){
         auto current_town = last_town;
         while(current_town->pi_ != nullptr){
@@ -705,6 +710,8 @@ std::vector<TownID> Datastructures::depth_first_search(Town* fromtown){
         }
         route.insert(route.begin(),fromtown->ID_);
     }
+
+    //vector remains empty if cycle wasnt found.
     return route;
 
 }
@@ -805,7 +812,7 @@ std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
 
     // calls the algorithm which is actually a modified breadth_first search to
     // find loops. If loop is found returns the route in a vector.
-    cycle_route = depth_first_search(fromtown);
+    cycle_route = search_loop(fromtown);
     return cycle_route;
 }
 

@@ -207,10 +207,9 @@ public:
     // So unless the town is connected to every other town in the network, this isn't as slow as O(n) would suggest.
     std::vector<TownID> get_roads_from(TownID id);
 
-    // Estimate of performance: O(n)
-    // Short rationale for estimate: The function calls breadth_first_search function (complexity) to map out the route,
-    // but before that it needs to go through all the towns in order (O(n)) to set their parameters so the algorithm works
-    // correctly.
+    // Estimate of performance: O(n+k)
+    // Short rationale for estimate: The function calls breadth_first_search function (O(n+k)) to map out the route,
+    // where n+k is the amount of towns and roads combined.
     std::vector<TownID> any_route(TownID fromid, TownID toid);
 
     // Non-compulsory phase 2 operations
@@ -223,21 +222,20 @@ public:
     // find the correct road to delete.
     bool remove_road(TownID town1, TownID town2);
 
-    // Estimate of performance: O(n)
-    // Short rationale for estimate: This function is exactly the same as any_route, so the complexity is O(n). This is
-    // because in order for the algorithm to work correctly, we need to go through all the towns to reset certain
-    // parameters.
+    // Estimate of performance: O(n+k)
+    // Short rationale for estimate: This function is exactly the same as any_route, so the complexity is O(n+k).
     std::vector<TownID> least_towns_route(TownID fromid, TownID toid);
 
-    // Estimate of performance: O(n)
-    // Short rationale for estimate: Uses a modified breadth-first-search to find the loops in the network
-    // but first it needs to reset the parameters in all towns, so it needs to go through all the towns before
-    // the algorithm.
+    // Estimate of performance: O(n+k)
+    // Short rationale for estimate: Uses a modified breadth-first-search (O(n+k) to find the loops in the network.
+    // n+k is the amount of towns and roads combined. Might be a bit faster since the algorithm stops when the loop
+    // is found.
     std::vector<TownID> road_cycle_route(TownID startid);
 
-    // Estimate of performance: O(n)
-    // Short rationale for estimate: Uses the djikstra algorithm (complexity) to find the shortest route, but before that
-    // it needs to reset the parameters in all towns.
+    // Estimate of performance: O((n+k)log(n+k))
+    // Short rationale for estimate: Uses the djikstra algorithm (O((n+k)log(n+k))) to find the shortest route.
+    // The algorithm can push single town to the priority_queue multiple times so at worst it is O((n+k)log(n+k))
+    // but usually O((n+k)log(n)), where n+k is the amount of towns and roads combined.
     std::vector<TownID> shortest_route(TownID fromid, TownID toid);
 
     // Estimate of performance:
@@ -252,7 +250,7 @@ private:
     int calculate_distance(Coord coord1, Coord coord2);
     bool does_town_exist(TownID id);
     std::vector<TownID> breadth_first_search(Town* fromtown, Town* totown);
-    std::vector<TownID> depth_first_search(Town* fromtown);
+    std::vector<TownID> search_loop(Town* fromtown);
     std::vector<TownID> dijkstra(Town* fromtown, Town* totown);
     void Relax(Town* u, Town* v);
 
@@ -269,8 +267,16 @@ private:
 
       // data needed for roads
       std::vector<Town*> adjacent_towns_;
+
+      // color is used to check whether a town has been in an algorithm yet, the only possible colors are
+      // "white", "gray", and "black".
       Color color_ = "white";
+
+      // pi is the pointer to the previous town in algorithms
       Town* pi_ = nullptr;
+
+      // Distance is just integer, where the distance is stored
+      // for the dijkstra algorithm.
       Distance dist_;
 
     };
